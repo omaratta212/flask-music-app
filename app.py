@@ -28,27 +28,7 @@ migrate = Migrate(app, db)
 # Models.
 #----------------------------------------------------------------------------#
 
-
-#  Genre Relationships abstract
-#  1. Genre belongs to many Artists.
-#  2. Genre belongs to many Venues.
-#  ----------------------------------------------------------------
-artist_genres = db.Table('artist_genres',
-    db.Column('artist_id', db.Integer, db.ForeignKey('artists.id'), primary_key=True),
-    db.Column('genre_id', db.Integer, db.ForeignKey('genres.id'), primary_key=True)
-)
-venue_genres = db.Table('venue_genres',
-    db.Column('venue_id', db.Integer, db.ForeignKey('venues.id'), primary_key=True),
-    db.Column('genre_id', db.Integer, db.ForeignKey('genres.id'), primary_key=True)
-)
-class Genre(db.Model):
-  __tablename__ = 'genres'
-  id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.String)
-
-
 #  Venue Relationships abstract
-#  1. Venue has many genres. Note: I don't know why a venue would have genres but this is the case in the dummy data.
 #  2. Venue has many shows
 #  ----------------------------------------------------------------
 class Venue(db.Model):
@@ -65,11 +45,10 @@ class Venue(db.Model):
     website = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean, nullable=False, default=False)
 
-    genres = db.relationship('Genre', secondary=venue_genres, backref=db.backref('venues', lazy=True))
+    genres = db.Column(db.ARRAY(db.String))
     shows = db.relationship('Show', backref='venue', lazy=True)
 
 #  Artist Relationships abstract
-#  1. Artist has many genres.
 #  2. Artist has many shows.
 #  ----------------------------------------------------------------
 class Artist(db.Model):
@@ -87,7 +66,7 @@ class Artist(db.Model):
     seeking_venue = db.Column(db.Boolean, nullable=False, default=False)
     seeking_description = db.Column(db.String(120))
 
-    genres = db.relationship('Genre', secondary=artist_genres, backref=db.backref('artists', lazy=True))
+    genres = db.Column(db.ARRAY(db.String))
     shows = db.relationship('Show', backref='artist', lazy=True)
 
 #  Show Relationships abstract
@@ -114,6 +93,23 @@ def format_datetime(value, format='medium'):
   return babel.dates.format_datetime(date, format)
 
 app.jinja_env.filters['datetime'] = format_datetime
+
+
+#----------------------------------------------------------------------------#
+# Helpers.
+#----------------------------------------------------------------------------#
+
+def safe_commit():
+  status = False
+  try:
+    db.session.commit()
+    status = True
+  except:
+    db.session.rollback()
+  finally:
+    db.session.close()
+    return status
+
 
 #----------------------------------------------------------------------------#
 # Controllers.
@@ -263,14 +259,25 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-  # TODO: insert form data as a new Venue record in the db, instead
-  # TODO: modify data to be the data object returned from db insertion
+  new_venue = Venue(
+    name=request.form.get('name'),
+    city=request.form.get('city'),
+    state=request.form.get('state'),
+    address=request.form.get('address'),
+    phone=request.form.get('phone'),
+    genres=request.form.getlist('genres'),
+    image_link=request.form.get('image_link'),
+    facebook_link=request.form.get('facebook_link'),
+    website=request.form.get('facebook_link'),
+    seeking_talent=request.form.get('seeking_talent') == 'y',
+  )
 
-  # on successful db insert, flash success
-  flash('Venue ' + request.form['name'] + ' was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
-  # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+  db.session.add(new_venue)
+  if safe_commit():
+      flash('Venue ' + request.form['name'] + ' was successfully listed!')
+  else:
+      flash('An error occurred. Venue ' + request.form['name'] + ' could not be listed.')
+
   return render_template('pages/home.html')
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
