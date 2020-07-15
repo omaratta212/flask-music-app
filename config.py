@@ -10,3 +10,4 @@ DEBUG = True
 
 
 SQLALCHEMY_DATABASE_URI = 'postgresql://atta:passwordforatta@127.0.0.1:5432/fyyur'
+SQLALCHEMY_TRACK_MODIFICATIONS = False
