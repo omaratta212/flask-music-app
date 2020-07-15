@@ -26,8 +26,31 @@ db = SQLAlchemy(app)
 # Models.
 #----------------------------------------------------------------------------#
 
+
+#  Genre Relationships abstract
+#  1. Genre belongs to many Artists.
+#  2. Genre belongs to many Venues.
+#  ----------------------------------------------------------------
+artist_genres = db.Table('artist_genres',
+    db.Column('artist_id', db.Integer, db.ForeignKey('artists.id'), primary_key=True),
+    db.Column('genre_id', db.Integer, db.ForeignKey('genres.id'), primary_key=True)
+)
+venue_genres = db.Table('venue_genres',
+    db.Column('venue_id', db.Integer, db.ForeignKey('venues.id'), primary_key=True),
+    db.Column('genre_id', db.Integer, db.ForeignKey('genres.id'), primary_key=True)
+)
+class Genre(db.Model):
+  __tablename__ = 'genres'
+  id = db.Column(db.Integer, primary_key=True)
+  name = db.Column(db.String)
+
+
+#  Venue Relationships abstract
+#  1. Venue has many genres. Note: I don't know why a venue would have genres but this is the case in the dummy data.
+#  2. Venue has many shows
+#  ----------------------------------------------------------------
 class Venue(db.Model):
-    __tablename__ = 'Venue'
+    __tablename__ = 'venues'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -37,11 +60,18 @@ class Venue(db.Model):
     phone = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    website = db.Column(db.String(120))
+    seeking_talent = db.Column(db.Boolean, nullable=False, default=False)
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    genres = db.relationship('Genre', secondary=venue_genres, backref=db.backref('venues', lazy=True))
+    shows = db.relationship('Show', backref='venue', lazy=True)
 
+#  Artist Relationships abstract
+#  1. Artist has many genres.
+#  2. Artist has many shows.
+#  ----------------------------------------------------------------
 class Artist(db.Model):
-    __tablename__ = 'Artist'
+    __tablename__ = 'artists'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -51,10 +81,23 @@ class Artist(db.Model):
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    website = db.Column(db.String(120))
+    seeking_venue = db.Column(db.Boolean, nullable=False, default=False)
+    seeking_description = db.Column(db.String(120))
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    genres = db.relationship('Genre', secondary=artist_genres, backref=db.backref('artists', lazy=True))
+    shows = db.relationship('Show', backref='artist', lazy=True)
 
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+#  Show Relationships abstract
+#  1. Show has one Artist.
+#  2. Show has one Venue.
+#  ----------------------------------------------------------------
+class Show(db.Model):
+  __tablename__ = 'shows'
+  id = db.Column(db.Integer, primary_key=True)
+  start_time = db.Column(db.DateTime, nullable=False)
+  artist_id = db.Column(db.Integer, db.ForeignKey('artists.id'), nullable=False)
+  venue_id = db.Column(db.Integer, db.ForeignKey('venues.id'), nullable=False)
 
 #----------------------------------------------------------------------------#
 # Filters.
