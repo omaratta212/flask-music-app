@@ -52,22 +52,12 @@ def artists():
 #  ----------------------------------------------------------------
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
-    # shows the venue page with the given venue_id
+    # shows the artist page with the given artist_id
     data = Artist.query.get_or_404(artist_id)
     return render_template('pages/show_artist.html', artist=data)
 
 
 #  Get Update Artists form
-#  ----------------------------------------------------------------
-@app.route('/artists/<int:artist_id>/edit', methods=['POST'])
-def edit_artist_submission(artist_id):
-    # TODO: take values from the form submitted, and update existing
-    # artist record with ID <artist_id> using the new attributes
-
-    return redirect(url_for('show_artist', artist_id=artist_id))
-
-
-#  Update Artists
 #  ----------------------------------------------------------------
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
@@ -87,6 +77,17 @@ def edit_artist(artist_id):
     }
     # TODO: populate form with fields from artist with ID <artist_id>
     return render_template('forms/edit_artist.html', form=form, artist=artist)
+
+
+#  Update Artists
+#  ----------------------------------------------------------------
+@app.route('/artists/<int:artist_id>/edit', methods=['POST'])
+def edit_artist_submission(artist_id):
+    # TODO: take values from the form submitted, and update existing
+    # artist record with ID <artist_id> using the new attributes
+
+    return redirect(url_for('show_artist', artist_id=artist_id))
+
 
 #  Search Artists
 #  ----------------------------------------------------------------
