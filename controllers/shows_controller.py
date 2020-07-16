@@ -1,5 +1,5 @@
 from app import app
-from models import db, Show
+from models import db, Show, Venue, Artist
 from flask import render_template, request, flash
 from forms import ShowForm
 from helpers import safe_commit
@@ -38,3 +38,17 @@ def create_show_submission():
 def shows():
     data = Show.query.all()
     return render_template('pages/shows.html', shows=data)
+
+#  Search Shows
+#  ----------------------------------------------------------------
+@app.route('/shows/search', methods=['POST'])
+def search_shows():
+    search_term = request.form.get('search_term', '')
+    results = Show.query.join(Venue, Artist).filter(Venue.name.ilike('%' + search_term + '%') | Artist.name.ilike('%' + search_term + '%')).distinct().all()
+
+    response = {
+        "count": len(results),
+        "data": results
+    }
+    return render_template('pages/show.html', results=response,
+                           search_term=request.form.get('search_term', ''))
