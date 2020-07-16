@@ -11,3 +11,4 @@ DEBUG = True
 
 SQLALCHEMY_DATABASE_URI = 'postgresql://atta:passwordforatta@127.0.0.1:5432/fyyur'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+SECRET_KEY = 'akldadfg628e9t^*T68*y8YgG8YDNSAIhl'

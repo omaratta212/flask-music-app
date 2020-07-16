@@ -1,8 +1,9 @@
 from datetime import datetime
 from flask_wtf import Form
 from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, BooleanField
-from wtforms.validators import DataRequired, AnyOf, URL
+from wtforms.validators import DataRequired, AnyOf, URL, NumberRange, Optional
 
+# TODO: Validate all fields correctly
 states = [
     ('AL', 'AL'),
     ('AK', 'AK'),
@@ -109,7 +110,7 @@ class VenueForm(Form):
         'address', validators=[DataRequired()]
     )
     phone = StringField(
-        'phone'
+        'phone', validators=[DataRequired(), NumberRange()]
     )
     image_link = StringField(
         'image_link'
@@ -127,7 +128,9 @@ class VenueForm(Form):
     seeking_talent = BooleanField(
         'seeking_talent'
     )
-
+    seeking_description = StringField(
+        'seeking_description', validators=[Optional()]
+    )
 
 class ArtistForm(Form):
     name = StringField(
@@ -144,7 +147,7 @@ class ArtistForm(Form):
         'image_link'
     )
     phone = StringField(
-        'phone'
+        'phone', validators=[DataRequired(), NumberRange()]
     )
 
     genres = SelectMultipleField(
