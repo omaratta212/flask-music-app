@@ -11,8 +11,10 @@ def safe_commit():
   try:
     db.session.commit()
     status = True
-  except:
+  except Exception as e:
     db.session.rollback()
+    print('APP Exception')
+    print(e)
   finally:
     db.session.close()
     return status

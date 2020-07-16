@@ -62,20 +62,12 @@ def show_artist(artist_id):
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
     form = ArtistForm()
-    artist = {
-        "id": 4,
-        "name": "Guns N Petals",
-        "genres": ["Rock n Roll"],
-        "city": "San Francisco",
-        "state": "CA",
-        "phone": "326-123-5000",
-        "website": "https://www.gunsnpetalsband.com",
-        "facebook_link": "https://www.facebook.com/GunsNPetals",
-        "seeking_venue": True,
-        "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
-        "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
-    }
-    # TODO: populate form with fields from artist with ID <artist_id>
+    artist = Artist.query.get_or_404(artist_id)
+
+    # Loop over the form fields & populate the data if available
+    for attr in form:
+        if hasattr(artist, attr.name):
+            attr.data = getattr(artist, attr.name)
     return render_template('forms/edit_artist.html', form=form, artist=artist)
 
 
@@ -83,8 +75,25 @@ def edit_artist(artist_id):
 #  ----------------------------------------------------------------
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
-    # TODO: take values from the form submitted, and update existing
-    # artist record with ID <artist_id> using the new attributes
+    artist = Artist.query.get(artist_id)
+
+    # Update the artist object
+    artist.name = request.form.get('name')
+    artist.city = request.form.get('city')
+    artist.state = request.form.get('state')
+    artist.phone = request.form.get('phone')
+    artist.genres = request.form.getlist('genres')
+    artist.image_link = request.form.get('image_link')
+    artist.facebook_link = request.form.get('facebook_link')
+    artist.website = request.form.get('facebook_link')
+    artist.seeking_venue = request.form.get('seeking_venue') == 'y'
+    artist.seeking_description = request.form.get('seeking_description')
+
+    # Safely commit the changes to the db
+    if safe_commit():
+        flash('Artist ' + request.form['name'] + ' was successfully updated!')
+    else:
+        flash('An error occurred. Artist ' + request.form['name'] + ' could not be updated.')
 
     return redirect(url_for('show_artist', artist_id=artist_id))
 
@@ -106,4 +115,3 @@ def search_artists():
     }
     return render_template('pages/search_artists.html', results=response,
                            search_term=request.form.get('search_term', ''))
-

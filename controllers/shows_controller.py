@@ -5,7 +5,7 @@ from forms import ShowForm
 from helpers import safe_commit
 
 
-#  Crete Shows
+#  Get Crete Show form
 #  ----------------------------------------------------------------
 @app.route('/shows/create')
 def create_shows():
@@ -15,6 +15,8 @@ def create_shows():
 
 @app.route('/shows/create', methods=['POST'])
 
+#  Crete Show
+#  ----------------------------------------------------------------
 def create_show_submission():
     new_show = Show(
         artist_id=request.form.get('artist_id'),
