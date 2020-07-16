@@ -98,6 +98,22 @@ def edit_artist_submission(artist_id):
     return redirect(url_for('show_artist', artist_id=artist_id))
 
 
+#  Delete Artist
+#  ----------------------------------------------------------------
+@app.route('/artists/<artist_id>/delete', methods=['POST']) # Changed request type to handle the redirection on backend
+def delete_artist(artist_id):
+    artist = Artist.query.get_or_404(artist_id)
+    name  = artist.name
+    db.session.delete(artist)
+
+    # Safely commit the changes to the db
+    if safe_commit():
+        flash('Artist ' + name + ' was successfully deleted!')
+    else:
+        flash('The Artist has a show or more.'  + name + ' could not be deleted.')
+
+    return redirect(url_for('artists'))
+
 #  Search Artists
 #  ----------------------------------------------------------------
 @app.route('/artists/search', methods=['POST'])

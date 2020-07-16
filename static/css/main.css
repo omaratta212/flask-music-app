@@ -209,3 +209,12 @@ h2.monospace {
 .subtitle {
   opacity: 0.5;
 }
+.buttons-container{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 60px;
+}
+.btn-danger{
+  margin-left: 10px;
+}
