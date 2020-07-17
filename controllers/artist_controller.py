@@ -1,4 +1,3 @@
-from app import app
 from models import db, Artist
 from flask import render_template, request, flash, redirect, url_for
 from forms import *
@@ -7,7 +6,6 @@ from helpers import safe_commit
 
 #  Get Create Artist From
 #  ----------------------------------------------------------------
-@app.route('/artists/create', methods=['GET'])
 def create_artist_form():
     form = ArtistForm()
     return render_template('forms/new_artist.html', form=form)
@@ -15,7 +13,6 @@ def create_artist_form():
 
 #  Create Artist
 #  ----------------------------------------------------------------
-@app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
     new_artist = Artist(
         name=request.form.get('name'),
@@ -41,7 +38,6 @@ def create_artist_submission():
 
 #  List Artists
 #  ----------------------------------------------------------------
-@app.route('/artists')
 def artists():
     # Query only the needed fields
     data = Artist.query.with_entities(Artist.id, Artist.name).all()
@@ -50,7 +46,6 @@ def artists():
 
 #  Show Artists
 #  ----------------------------------------------------------------
-@app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
     # shows the artist page with the given artist_id
     data = Artist.query.get_or_404(artist_id)
@@ -59,7 +54,6 @@ def show_artist(artist_id):
 
 #  Get Update Artists form
 #  ----------------------------------------------------------------
-@app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
     form = ArtistForm()
     artist = Artist.query.get_or_404(artist_id)
@@ -73,7 +67,6 @@ def edit_artist(artist_id):
 
 #  Update Artists
 #  ----------------------------------------------------------------
-@app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
     artist = Artist.query.get(artist_id)
 
@@ -100,7 +93,6 @@ def edit_artist_submission(artist_id):
 
 #  Delete Artist
 #  ----------------------------------------------------------------
-@app.route('/artists/<artist_id>/delete', methods=['POST']) # Changed request type to handle the redirection on backend
 def delete_artist(artist_id):
     artist = Artist.query.get_or_404(artist_id)
     name  = artist.name
@@ -116,7 +108,6 @@ def delete_artist(artist_id):
 
 #  Search Artists
 #  ----------------------------------------------------------------
-@app.route('/artists/search', methods=['POST'])
 def search_artists():
     search_term = request.form.get('search_term', '')
     results = Artist.query.filter(Artist.name.ilike('%' + search_term + '%')).all()

@@ -1,4 +1,3 @@
-from app import app
 from models import db, Venue
 from flask import render_template, request, flash, redirect, url_for
 from forms import *
@@ -7,14 +6,12 @@ from helpers import safe_commit
 
 #  Get Create Venue Form
 #  ----------------------------------------------------------------
-@app.route('/venues/create', methods=['GET'])
 def create_venue_form():
     form = VenueForm()
     return render_template('forms/new_venue.html', form=form)
 
 #  Create Venue
 #  ----------------------------------------------------------------
-@app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
     new_venue = Venue(
         name=request.form.get('name'),
@@ -41,7 +38,6 @@ def create_venue_submission():
 
 #  List Venues
 #  ----------------------------------------------------------------
-@app.route('/venues')
 def venues():
     # Get all venues once to avoid multiple db queries, ordered to optimize for the next step
     venues = Venue.query.order_by('city', 'state').all()
@@ -71,7 +67,6 @@ def venues():
 
 #  Show Venue
 #  ----------------------------------------------------------------
-@app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
     venue = Venue.query.get_or_404(venue_id)
     return render_template('pages/show_venue.html', venue=venue)
@@ -79,7 +74,6 @@ def show_venue(venue_id):
 
 #  Get Update Venue form
 #  ----------------------------------------------------------------
-@app.route('/venues/<int:venue_id>/edit', methods=['GET'])
 def edit_venue(venue_id):
     form = VenueForm()
     venue = Venue.query.get_or_404(venue_id)
@@ -92,7 +86,6 @@ def edit_venue(venue_id):
 
 #  Update Venue
 #  ----------------------------------------------------------------
-@app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
     venue = Venue.query.get(venue_id)
 
@@ -120,7 +113,6 @@ def edit_venue_submission(venue_id):
 
 #  Delete Venue
 #  ----------------------------------------------------------------
-@app.route('/venues/<venue_id>/delete', methods=['POST']) # Changed request type to handle the redirection on backend
 def delete_venue(venue_id):
     venue = Venue.query.get_or_404(venue_id)
     name  = venue.name
@@ -137,7 +129,6 @@ def delete_venue(venue_id):
 
 #  Search Venue
 #  ----------------------------------------------------------------
-@app.route('/venues/search', methods=['POST'])
 def search_venues():
     search_term = request.form.get('search_term', '')
     results = Venue.query.filter(Venue.name.ilike('%' + search_term + '%')).all()

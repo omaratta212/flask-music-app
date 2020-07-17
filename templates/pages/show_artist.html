@@ -10,7 +10,7 @@
                     </h1>
                 </div>
                 <div class="col-sm-6 buttons-container">
-                    <a href="/venues/{{ artist.id }}/edit" type="button" class="btn btn-primary">Edit</a>
+                    <a href="/artists/{{ artist.id }}/edit" type="button" class="btn btn-primary">Edit</a>
                     <form action="/artists/{{ artist.id }}/delete" method="POST" id="delete"></form>
                     <button type="button" class="btn btn-danger" onclick="document.getElementById('delete').submit()">Delete</button>
                 </div>

@@ -1,4 +1,3 @@
-from app import app
 from models import db, Show, Venue, Artist
 from flask import render_template, request, flash
 from forms import ShowForm
@@ -7,13 +6,10 @@ from helpers import safe_commit
 
 #  Get Crete Show form
 #  ----------------------------------------------------------------
-@app.route('/shows/create')
 def create_shows():
     # renders form. do not touch.
     form = ShowForm()
     return render_template('forms/new_show.html', form=form)
-
-@app.route('/shows/create', methods=['POST'])
 
 #  Crete Show
 #  ----------------------------------------------------------------
@@ -34,14 +30,12 @@ def create_show_submission():
 
 #  List Shows
 #  ----------------------------------------------------------------
-@app.route('/shows')
 def shows():
     data = Show.query.all()
     return render_template('pages/shows.html', shows=data)
 
 #  Search Shows
 #  ----------------------------------------------------------------
-@app.route('/shows/search', methods=['POST'])
 def search_shows():
     search_term = request.form.get('search_term', '')
     results = Show.query.join(Venue, Artist).filter(Venue.name.ilike('%' + search_term + '%') | Artist.name.ilike('%' + search_term + '%')).distinct().all()
